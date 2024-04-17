@@ -17,9 +17,16 @@ const (
 	IDENT = "IDENT" // add, foobar, x, y, etc
 	INT   = "INT"   // 12345
 
-	// Operands
-	ASSIGN = "="
-	PLUS   = "+"
+	// Operators
+	ASSIGN   = "="
+	PLUS     = "+"
+	MINUS    = "-"
+	BANG     = "!"
+	ASTERISK = "*"
+	SLASH    = "/"
+
+	LT = "<"
+	GT = "<"
 
 	// Delimiters
 	COMMA     = ","
