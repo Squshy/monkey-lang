@@ -7,6 +7,7 @@ import (
 
 type Node interface {
 	TokenLiteral() string
+	// Helpful for debugging
 	String() string
 }
 
