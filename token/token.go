@@ -29,7 +29,7 @@ const (
 	NOT_EQ = "!="
 
 	LT = "<"
-	GT = "<"
+	GT = ">"
 
 	// Delimiters
 	COMMA     = ","
