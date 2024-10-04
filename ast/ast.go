@@ -32,7 +32,6 @@ func (p *Program) TokenLiteral() string {
 	} else {
 		return ""
 	}
-
 }
 
 func (p *Program) String() string {
@@ -102,6 +101,27 @@ func (pe *PrefixExpression) String() string {
 
 	out.WriteString("(")
 	out.WriteString(pe.Operator)
+	out.WriteString(pe.Right.String())
+	out.WriteString(")")
+
+	return out.String()
+}
+
+type InfixExpression struct {
+	Token    token.Token // a bunch of them, e.g. +*/-
+	Operator string
+	Left     Expression
+	Right    Expression
+}
+
+func (pe *InfixExpression) expressionNode()      {}
+func (pe *InfixExpression) TokenLiteral() string { return pe.Token.Literal }
+func (pe *InfixExpression) String() string {
+	var out bytes.Buffer
+
+	out.WriteString("(")
+	out.WriteString(pe.Left.String())
+	out.WriteString(" " + pe.Operator + " ")
 	out.WriteString(pe.Right.String())
 	out.WriteString(")")
 
