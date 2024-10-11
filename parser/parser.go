@@ -168,7 +168,10 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 
 	leftExp := prefix()
 
+	// Checks if the left-binding power of the next-operator/token is higher
+	// than our current right-binding power
 	for !p.peekTokenIs(token.SEMICOLON) && precedence < p.peekPrecedence() {
+
 		infix := p.infixParseFns[p.peekToken.Type]
 		if infix == nil {
 			return leftExp
