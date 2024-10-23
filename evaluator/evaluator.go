@@ -92,9 +92,19 @@ func evalMinusOperatorExpression(right object.Object) object.Object {
 }
 
 func evalInfixExpression(operator string, left object.Object, right object.Object) object.Object {
+	leftType := left.Type()
+	rightType := right.Type()
 	switch {
-	case left.Type() == object.INTEGER_OBJ && right.Type() == object.INTEGER_OBJ:
+	case leftType == object.INTEGER_OBJ && rightType == object.INTEGER_OBJ:
 		return evalIntegerInfixExpression(operator, left, right)
+	// This only works because we have three references, TRUE, FALSE, and NULL
+	// so we can compare the memory addresses. Also why the check for integers
+	// needs to be higher up in the switch statement. This system does not allow
+	// pointer comparison for integer objects, but it does for booleans.
+	case operator == "==":
+		return nativeBoolToBooleanObject(left == right)
+	case operator == "!=":
+		return nativeBoolToBooleanObject(left != right)
 	default:
 		return NULL
 	}
