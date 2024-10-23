@@ -12,6 +12,7 @@ var (
 	// a boolean value, we can just reference these two.
 	TRUE  = &object.Boolean{Value: true}
 	FALSE = &object.Boolean{Value: false}
+	NULL  = &object.Null{}
 )
 
 func Eval(node ast.Node) object.Object {
