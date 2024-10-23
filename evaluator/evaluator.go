@@ -5,6 +5,15 @@ import (
 	"monkey/object"
 )
 
+var (
+	// Only keep one reference to a boolean object.
+	// All trues will be the same, same with all falses
+	// We don't need to create a new `object.Boolean` each time we encounter
+	// a boolean value, we can just reference these two.
+	TRUE  = &object.Boolean{Value: true}
+	FALSE = &object.Boolean{Value: false}
+)
+
 func Eval(node ast.Node) object.Object {
 	switch node := node.(type) {
 	// Statements
@@ -16,7 +25,11 @@ func Eval(node ast.Node) object.Object {
 	case *ast.IntegerLiteral:
 		return &object.Integer{Value: node.Value}
 	case *ast.Boolean:
-		return &object.Boolean{Value: node.Value}
+		if node.Value == true {
+			return TRUE
+		}
+
+		return FALSE
 	}
 
 	return nil
