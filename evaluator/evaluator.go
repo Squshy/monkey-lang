@@ -36,8 +36,10 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		if isError(val) {
 			return val
 		}
-
-	// Expressions
+		env.Set(node.Name.Value, val)
+		// Expressions
+	case *ast.Identifier:
+		return evalIdentifier(node, env)
 	case *ast.IntegerLiteral:
 		return &object.Integer{Value: node.Value}
 	case *ast.Boolean:
@@ -86,6 +88,10 @@ func isTruthy(obj object.Object) bool {
 	default:
 		return true
 	}
+}
+
+func newError(format string, a ...interface{}) *object.Error {
+	return &object.Error{Message: fmt.Sprintf(format, a...)}
 }
 
 func isError(obj object.Object) bool {
@@ -220,6 +226,13 @@ func evalIfExpression(node *ast.IfExpression, env *object.Environment) object.Ob
 	return NULL
 }
 
-func newError(format string, a ...interface{}) *object.Error {
-	return &object.Error{Message: fmt.Sprintf(format, a...)}
+func evalIdentifier(node *ast.Identifier, env *object.Environment) object.Object {
+	name := node.Value
+	val, found := env.Get(name)
+
+	if !found {
+		return newError("identifier not found: %s", name)
+	}
+
+	return val
 }
