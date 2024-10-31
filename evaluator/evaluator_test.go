@@ -178,6 +178,25 @@ func TestReturnStatements(t *testing.T) {
             return 1;
         }
         `, 10},
+		{`
+        let x = fn(x) { x * 2 };
+        return x(4);
+        `, 8},
+		{`
+        let x = fn(x) {
+            let y = fn(y) { y * x };
+            return y(x);
+        }
+        return x(4);
+        `, 16},
+		{`
+        let f = fn(x) {
+            let res = x + 10;
+            return res;
+            return 10;
+        }
+        f(10);
+        `, 20},
 	}
 
 	for _, tt := range tests {
@@ -263,5 +282,23 @@ func TestFunctionObject(t *testing.T) {
 
 	if fn.Body.String() != expectedBody {
 		t.Fatalf("body is not %q. got=%q", expectedBody, fn.Body.String())
+	}
+}
+
+func TestFunctionApplication(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected int64
+	}{
+		{"let identity = fn(x) { x; }; identity(5);", 5},
+		{"let identity = fn(x) { return x; }; identity(5);", 5},
+		{"let double = fn(x) { x * 2; }; double(5);", 10},
+		{"let add = fn(x, y) { x + y; }; add(5, 5);", 10},
+		{"let add = fn(x, y) { x + y; }; add(5 + 5, add(5, 5));", 20},
+		{"fn(x) { x; }(5)", 5},
+	}
+
+	for _, tt := range tests {
+		testIntegerObject(t, testEval(tt.input), tt.expected)
 	}
 }
