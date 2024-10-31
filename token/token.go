@@ -41,6 +41,7 @@ const (
 	RBRACE = "}"
 
 	// Keywords
+	STRING   = "STRING"
 	FUNCTION = "FUNCTION"
 	RETURN   = "RETURN"
 	LET      = "LET"
