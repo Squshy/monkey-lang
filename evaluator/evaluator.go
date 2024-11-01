@@ -239,6 +239,8 @@ func evalInfixExpression(operator string, left object.Object, right object.Objec
 		return newError("type mismatch: %s %s %s", left.Type(), operator, right.Type())
 	case leftType == object.INTEGER_OBJ && rightType == object.INTEGER_OBJ:
 		return evalIntegerInfixExpression(operator, left, right)
+	case leftType == object.STRING_OBJ && rightType == object.STRING_OBJ:
+		return evalStringInfixExpression(operator, left, right)
 	// This only works because we have three references, TRUE, FALSE, and NULL
 	// so we can compare the memory addresses. Also why the check for integers
 	// needs to be higher up in the switch statement. This system does not allow
@@ -276,6 +278,16 @@ func evalIntegerInfixExpression(operator string, left object.Object, right objec
 	default:
 		return newError("unknown operator: %s %s %s", left.Type(), operator, right.Type())
 	}
+}
+
+func evalStringInfixExpression(operator string, left object.Object, right object.Object) object.Object {
+	leftVal := left.(*object.String).Value
+	rightVal := right.(*object.String).Value
+	if operator != "+" {
+		return newError("unknown operator: %s %s %s", left.Type(), operator, right.Type())
+	}
+
+	return &object.String{Value: leftVal + rightVal}
 }
 
 func evalIfExpression(node *ast.IfExpression, env *object.Environment) object.Object {
