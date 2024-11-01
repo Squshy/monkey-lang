@@ -152,6 +152,10 @@ func TestEvalBooleanExpression(t *testing.T) {
 		{"(1 < 2) == false", false},
 		{"(1 > 2) == true", false},
 		{"(1 > 2) == false", true},
+		{`"abc" == "abc"`, true},
+		{`"abc" != "abc"`, false},
+		{`"abc" == "cba"`, false},
+		{`"abc" != "cba"`, true},
 	}
 
 	for _, tt := range tests {
