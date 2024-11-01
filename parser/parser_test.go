@@ -27,6 +27,26 @@ func testIntegerLiteral(t *testing.T, il ast.Expression, value int64) bool {
 	return true
 }
 
+func testStringLiteral(t *testing.T, il ast.Expression, value string) bool {
+	str, ok := il.(*ast.StringLiteral)
+	if !ok {
+		t.Errorf("il not *ast.StringLiteral. got=%T", il)
+		return false
+	}
+
+	if str.Value != value {
+		t.Errorf("integ.Value not %s. got=%s", value, str.Value)
+		return false
+	}
+
+	if str.TokenLiteral() != fmt.Sprintf("%s", value) {
+		t.Errorf("integ.TokenLiteral not %s. got=%s", value, str.TokenLiteral())
+		return false
+	}
+
+	return true
+}
+
 func testBooleanLiteral(t *testing.T, exp ast.Expression, value bool) bool {
 	bo, ok := exp.(*ast.Boolean)
 	if !ok {
@@ -299,6 +319,26 @@ func TestIntegerLiteralExpression(t *testing.T) {
 	}
 
 	testIntegerLiteral(t, stmt.Expression, 5)
+}
+
+func TestStringLiteralExpression(t *testing.T) {
+	input := `"hey there cowboy";`
+
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+
+	if len(program.Statements) != 1 {
+		t.Fatalf("program has not enough statements. got=%d", len(program.Statements))
+	}
+	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+
+	if !ok {
+		t.Fatalf("expected program.Statements[0] to be an ast.ExpressionStatement, got=%T", program.Statements[0])
+	}
+
+	testStringLiteral(t, stmt.Expression, "hey there cowboy")
 }
 
 func TestPrefixOperatorExpressions(t *testing.T) {
