@@ -65,6 +65,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.BANG, p.parsePrefixExpression)
 	p.registerPrefix(token.MINUS, p.parsePrefixExpression)
 	p.registerPrefix(token.LPAREN, p.parseGroupedExpression)
+	p.registerPrefix(token.LBRACKET, p.parseArrayLiteral)
 	p.registerPrefix(token.IF, p.parseIfExpression)
 	p.registerPrefix(token.FUNCTION, p.parseFunctionExpression)
 	p.infixParseFns = make(map[token.TokenType]infixParseFn)
@@ -216,8 +217,40 @@ func (p *Parser) parseStringLiteral() ast.Expression {
 	return &ast.StringLiteral{Token: p.curToken, Value: p.curToken.Literal}
 }
 
+func (p *Parser) parseArrayLiteral() ast.Expression {
+	return &ast.ArrayLiteral{Elements: p.parseExpressionList(token.RBRACKET), Token: p.curToken}
+}
+
 func (p *Parser) parseBoolean() ast.Expression {
 	return &ast.Boolean{Token: p.curToken, Value: p.curTokenIs(token.TRUE)}
+}
+
+func (p *Parser) parseExpressionList(end token.TokenType) []ast.Expression {
+	list := []ast.Expression{}
+	if p.peekTokenIs(end) {
+		p.nextToken()
+		return list
+	}
+
+	// Move to first identifier
+	p.nextToken()
+
+	expr := p.parseExpression(LOWEST)
+	list = append(list, expr)
+
+	for p.peekTokenIs(token.COMMA) {
+		p.nextToken() // Move over the comma
+		p.nextToken() // Move over the ident
+
+		expr := p.parseExpression(LOWEST)
+		list = append(list, expr)
+	}
+
+	if !p.expectPeek(end) {
+		return nil
+	}
+
+	return list
 }
 
 func (p *Parser) parsePrefixExpression() ast.Expression {
@@ -357,32 +390,8 @@ func (p *Parser) parseFunctionParameters() []*ast.Identifier {
 
 func (p *Parser) parseCallExpression(left ast.Expression) ast.Expression {
 	expr := &ast.CallExpression{Token: p.curToken, Function: left}
-	expr.Arguments = p.parseCallExpressionArguments()
+	expr.Arguments = p.parseExpressionList(token.RPAREN)
 	return expr
-}
-
-func (p *Parser) parseCallExpressionArguments() []ast.Expression {
-	exprs := []ast.Expression{}
-
-	if p.peekTokenIs(token.RPAREN) {
-		p.nextToken()
-		return exprs
-	}
-
-	p.nextToken() // Move to first expression
-	exprs = append(exprs, p.parseExpression(LOWEST))
-
-	for p.peekTokenIs(token.COMMA) {
-		p.nextToken() // Move over the comma
-		p.nextToken() // Move over the expression
-		exprs = append(exprs, p.parseExpression(LOWEST))
-	}
-
-	if !p.expectPeek(token.RPAREN) {
-		return nil
-	}
-
-	return exprs
 }
 
 func (p *Parser) curTokenIs(t token.TokenType) bool {
