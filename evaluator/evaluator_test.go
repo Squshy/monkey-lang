@@ -365,9 +365,14 @@ func TestBuiltInFunctions(t *testing.T) {
 		{`len([1,2,3,4])`, 4},
 		{`first([1,2,3,4])`, 1},
 		{`first([1])`, 1},
-		{`first([])`, nil},
+		{`first([])`, NULL},
 		{`first("hey")`, "argument to `first` must be ARRAY, got STRING"},
 		{`first(1234)`, "argument to `first` must be ARRAY, got INTEGER"},
+		{`last([1,2,3,4])`, 4},
+		{`last([1])`, 1},
+		{`last([])`, NULL},
+		{`last("hey")`, "argument to `last` must be ARRAY, got STRING"},
+		{`last(1234)`, "argument to `last` must be ARRAY, got INTEGER"},
 	}
 
 	for _, tt := range tests {
