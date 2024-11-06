@@ -368,6 +368,7 @@ func TestBuiltInFunctions(t *testing.T) {
 		{`first([])`, NULL},
 		{`first("hey")`, "argument to `first` must be ARRAY, got STRING"},
 		{`first(1234)`, "argument to `first` must be ARRAY, got INTEGER"},
+		{`last([], [])`, "wrong number of arguments. got=2, want=1"},
 		{`last([1,2,3,4])`, 4},
 		{`last([1])`, 1},
 		{`last([])`, NULL},
@@ -376,8 +377,16 @@ func TestBuiltInFunctions(t *testing.T) {
 		{`rest([1,2,3])`, []int{2, 3}},
 		{`rest([1])`, []int{}},
 		{`rest([])`, NULL},
+		{`rest([], [])`, "wrong number of arguments. got=2, want=1"},
 		{`rest(1234)`, "argument to `rest` must be ARRAY, got INTEGER"},
 		{`rest("1234")`, "argument to `rest` must be ARRAY, got STRING"},
+		{`push([])`, "wrong number of arguments. got=1, want=2"},
+		{`push([], [], [])`, "wrong number of arguments. got=3, want=2"},
+		{`push([1,2,3], 4)`, []int{1, 2, 3, 4}},
+		{`push([1], 2)`, []int{1, 2}},
+		{`push([], "string")`, []string{"string"}},
+		{`push(1234, [])`, "argument to `push` must be ARRAY, got INTEGER"},
+		{`push("1234", [])`, "argument to `push` must be ARRAY, got STRING"},
 	}
 
 	for _, tt := range tests {
