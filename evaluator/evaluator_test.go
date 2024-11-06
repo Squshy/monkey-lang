@@ -373,6 +373,11 @@ func TestBuiltInFunctions(t *testing.T) {
 		{`last([])`, NULL},
 		{`last("hey")`, "argument to `last` must be ARRAY, got STRING"},
 		{`last(1234)`, "argument to `last` must be ARRAY, got INTEGER"},
+		{`rest([1,2,3])`, []int{2, 3}},
+		{`rest([1])`, []int{}},
+		{`rest([])`, NULL},
+		{`rest(1234)`, "argument to `rest` must be ARRAY, got INTEGER"},
+		{`rest("1234")`, "argument to `rest` must be ARRAY, got STRING"},
 	}
 
 	for _, tt := range tests {
